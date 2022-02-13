@@ -33,7 +33,7 @@
 	<dependency>
 	    <groupId>com.github.CarbonCock</groupId>
 	    <artifactId>MetaCord</artifactId>
-	    <version>1.1</version>
+	    <version>2.0</version>
 	</dependency>
 ```
 
