@@ -14,7 +14,6 @@
    - An [`@Command`](#Command-class) annotation to define the command.
    - An [`@Help`](#Help-annotation) annotation to define the help.
    - A **map** that associates _command_ and _description_ (set via @Help annotation).
-   - A generic `CommandData<Command>` to read the characteristics of the command 
 
 ## MetaCord Dependencies
 
@@ -69,7 +68,7 @@ public @interface Help {
     //executes the annotated method when a user submits this string
     String executeOnCall() default "";
     
-    //it is the description of the command that is saved in a HashMap accessible via CommandData<Command>#helpDescription()
+    //it is the description of the command that is saved in a HashMap accessible via this.helpDescriptions
     String description() default ""; 
 }
 ```
