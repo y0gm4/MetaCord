@@ -97,7 +97,7 @@ public class MyBot{
 ## Unchecked prefix
 ***
 
-> **We can also avoid prefix control**, suppose we have a database where we save the preferences of each server and among them the usage of commands... we can't change it from the annotation since it is read during **RunTime**.
+> **We can also avoid prefix control**, suppose we have a database where we save the preferences of each server and among them the `prefix` of commands... we can't change it from the annotation since it is read during **RunTime**.
 
 To do this, simply put a `'0'` (zero) as a character! This will require an extra **check** at the _start_ of the _method_.
 
@@ -111,7 +111,7 @@ public class HelloExample extends CommandListener{
         final char usage = db.getUsagePreference(event.getServer());
         final String command = event.getMessageContent();
         
-        if(!command.startWith("%shello").formatted(usage)) return; // The famous check
+        if(!command.startWith("%shello".formatted(usage))) return; // The famous check
         
         new MessageBuilder().setContent("Hello world").send(event.getChannel());
         // When someone writes "(?)hello", "(?)hi" or "(?)hey" will execute this method
