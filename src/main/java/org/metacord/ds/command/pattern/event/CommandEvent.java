@@ -70,7 +70,7 @@ public class CommandEvent implements MessageCreateListener {
     public void onMessageCreate(MessageCreateEvent event) {
         String command = event.getMessageContent();
 
-        // if the usage is equal to 0 it means that you have chosen that the usage is not checked
+        // if the usage is equal to 0 it means that you have chosen that the prefix is not checked
         try {
             if(containsKeyIgnoringCase(helpCommands, command.replace(command.substring(0, 1), "0"))){
                 command = command.replace(command.substring(0, 1), "0");
@@ -101,7 +101,7 @@ public class CommandEvent implements MessageCreateListener {
                 command.contains(" ") ? command.substring(0, command.indexOf(" ")).toLowerCase(Locale.ROOT)
                         : command.toLowerCase(Locale.ROOT);
 
-        // if the usage is equal to 0 it means that you have chosen that the usage is not checked
+        // if the usage is equal to 0 it means that you have chosen that the prefix is not checked
         try {
             if(containsKeyIgnoringCase(commands, headCommand.replace(headCommand.substring(0, 1), "0"))){
                 headCommand = headCommand.replace(headCommand.substring(0, 1), "0");
