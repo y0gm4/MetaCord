@@ -13,16 +13,17 @@
 
    - An [`@Command`](#Command-class) annotation to define the command.
    - An [`@Help`](#Help-annotation) annotation to define the help.
+   - An [`CommandData`](#CommandData) class to compact all the info of the command.
    - A **map** that associates _command_ and _description_ (set via @Help annotation).
 
 ## MetaCord Dependencies
-
+***
 > For now it only works with maven!
 
 ### Maven
 
 ```xml
-        <repositories>
+    <repositories>
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
@@ -32,11 +33,11 @@
 	<dependency>
 	    <groupId>com.github.CarbonCock</groupId>
 	    <artifactId>MetaCord</artifactId>
-	    <version>2.0</version>
+	    <version>3.0</version>
 	</dependency>
 ```
 
-## How to use
+# How to use
 ***
 ### Command class
 ```java
@@ -45,15 +46,15 @@
 public class HelloExample extends CommandListener{
     
     @Override
-    public void onCommand(MessageCreateEvent event){
-        new MessageBuilder().setContent("Hello world").send(event.getChannel());
+    public void onCommand(CommandData<? extends CommandListener> command){
+        new MessageBuilder().setContent("Hello world").send(command.getEvent().getChannel());
         // When someone writes "$hello", "$hi" or "$hey" will execute this method
     }
     
     @Help
     @Override
-    public void help(MessageCreateEvent event){
-        new MessageBuilder().setContent("This is a help message!").send(event.getChannel());
+    public void help(CommandData<? extends CommandListener> command){
+        new MessageBuilder().setContent("This is a help message!").send(command.getEvent().getChannel());
         // When someone writes "$help hello" execute this method
     }
 }
@@ -88,7 +89,7 @@ public class MyBot{
         api.addListener(new CommandEvent(new HelloExample()));
         
         //register all classes of a package
-        final String packagePath = "Commands"; //package path
+        final String packagePath = "commands"; //package path
         api.addListener(new CommandEvent(packagePath));
     }
 }
@@ -106,21 +107,21 @@ To do this, simply put a `'0'` (zero) as a character! This will require an extra
 public class HelloExample extends CommandListener{
     
     @Override
-    public void onCommand(MessageCreateEvent event){
+    public void onCommand(CommandData<? extends CommandListener> command){
         // We call the prefix "(?)" to mean that it can be replaced by any character during this reading
-        final char usage = db.getUsagePreference(event.getServer());
-        final String command = event.getMessageContent();
+        final char usage = db.getUsagePreference(command.getEvent().getServer());
+        final String content = command.getEvent().getMessageContent();
         
-        if(!command.startWith("%shello".formatted(usage))) return; // The famous check
+        if(!content.startWith("%shello".formatted(usage))) return; // The famous check
         
-        new MessageBuilder().setContent("Hello world").send(event.getChannel());
+        new MessageBuilder().setContent("Hello world").send(command.getEvent().getChannel());
         // When someone writes "(?)hello", "(?)hi" or "(?)hey" will execute this method
     }
     
     @Help
     @Override
-    public void help(MessageCreateEvent event){
-        new MessageBuilder().setContent("This is a help message!").send(event.getChannel());
+    public void help(CommandData<? extends CommandListener> command){
+        new MessageBuilder().setContent("This is a help message!").send(command.getEvent().getChannel());
         // When someone writes "(?)help hello" execute this method
     }
 }
@@ -137,19 +138,39 @@ To do this, simply put `-1` as the number of _arguments_!
 public class BanExample extends CommandListener{
     
     @Override
-    public void onCommand(MessageCreateEvent event){
-        final String command = event.getMessageContent();
-        User user = event.getMessage().getUserAuthor().get();
-        final String[] args = command.split(" ");
+    public void onCommand(CommandData<? extends CommandListener> command){
+        User user = command.getEvent().getMessage().getUserAuthor().get();
+        final String[] args = command.getArgs().get();
 
         if(args.length == 1 || args.length > 3) return; // Error message...
 	
-	event.getServer().ifPresent(server -> server.banUser(event.getApi().getUserById(args[1])));
+	command.getEvent().getServer().ifPresent(server -> server.banUser(command.getEvent().getApi().getUserById(args[1])));
         
         new MessageBuilder().setContent("%s was banned %s"
                 .formatted(user.getName(), args.length == 3 ?
                         "for \"" + args[2] + "\"" : "")
-        ).send(event.getChannel());
+        ).send(command.getEvent().getChannel());
     }
 }
+```
+
+# CommandData
+***
+> To interface with the command and its information, we can use the CommandData class that is passed directly as a parameter to the `onCommand()` and `onHelp()` methods.
+
+```java
+@Command(name = "hello", prefix = '$', aliases = {"hi", "hey"}) 
+public class HelloExample extends CommandListener{
+    
+    @Override
+    public void onCommand(CommandData<? extends CommandListener> command){
+        new MessageBuilder.setContent("description: %s".formatted(command.helpDescription()))
+        // For example we can take the description of the command
+    }
+    
+    @Help(description = "Simple description of what the command does . . .")
+    @Override
+    public void help(CommandData<? extends CommandListener> command){}
+}
+
 ```
